@@ -2,10 +2,10 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/liox_logo.svg",
-    "light": "/logo/liox_logo.svg"
+    "dark": "/logo/LogoMark_blue_new.png",
+    "light": "/logo/LogoMark_blue_new.png"
   },
-  "favicon": "/logo/liox_logo.svg",
+  "favicon": "/logo/LogoMark_blue_new.png",
   "colors": {
     "primary": "#00C3FF",
     "light": "#4DD5FF",
