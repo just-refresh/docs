@@ -2,17 +2,17 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/liox_logo.svg",
+    "light": "/logo/liox_logo.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/liox_logo.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#00C3FF",
+    "light": "#4DD5FF",
+    "dark": "#0098CC",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#00C3FF",
+      "to": "#4DD5FF"
     }
   },
   "topbarLinks": [
