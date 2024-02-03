@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/LogoMark_blue_new.png",
-    "light": "/logo/LogoMark_blue_new.png"
+    "dark": "/logo/Liox_Logo_blue_new.png",
+    "light": "/logo/Liox_Logo_blue_new.png"
   },
   "favicon": "/logo/LogoMark_blue_new.png",
   "colors": {
@@ -18,29 +18,47 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@liox.io"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Sign Up",
+    "url": "https://liox.io"
   },
   "tabs": [
     {
       "name": "API Reference",
       "url": "api-reference"
+    },
+    {
+      "name": "Content",
+      "url": "content"
+    },
+    {
+        "name": "Liox.io",
+        "url": "https://liox.io"
     }
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+        "name": "API References",
+        "icon": "code",
+        "url": "api-references"
+    },
+    {
+        "name": "Content",
+        "icon": "pencil",
+        "url": "content"
+    },
+    {
+        "name": "Schreib uns!",
+        "icon": "envelope",
+        "url": "https://liox.io/contact"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Erste Schritte",
       "pages": [
         "introduction",
         "quickstart",
@@ -67,6 +85,7 @@
     {
       "group": "Endpoint Examples",
       "pages": [
+        "api-reference/endpoint/users",
         "api-reference/endpoint/get",
         "api-reference/endpoint/create",
         "api-reference/endpoint/delete"

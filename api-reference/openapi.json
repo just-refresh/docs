@@ -1,195 +1,2911 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
+    "openapi": "3.0.0",
+    "info": {
+        "title": "oauth-server",
+        "version": "1.0"
     },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+    "servers": [
+        {
+            "url": "/api/v1/"
         }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
+    ],
+    "paths": {
+        "/tokeninfo/?{token}": {
+            "get": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Get token info",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "getToken",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "iss": {
+                                            "type": "string"
+                                        },
+                                        "sub": {
+                                            "type": "integer"
+                                        },
+                                        "aud": {
+                                            "type": "string"
+                                        },
+                                        "iat": {
+                                            "type": "integer"
+                                        },
+                                        "exp": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+        "/oauth2/token": {
+            "post": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Create access token",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "createToken",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "basic"
+                        }
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "refresh_token",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "remember",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "refresh_token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "client authentication failed"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
                 }
-              }
             }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+        },
+        "/oauth2/upload/token": {
+            "post": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Create upload token",
+                "description": "Permissions: [USER]",
+                "operationId": "createUploadToken",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "basic"
+                        }
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "refresh_token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "remember",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "client authentication failed"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/tokens": {
+            "delete": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Delete tokens",
+                "description": "Permissions: [END_USER]",
+                "operationId": "deleteToken",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "bearer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/oauth2/google/{role}": {
+            "post": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Create access token",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "googleAuth",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "basic"
+                        }
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "remember",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "refresh_token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
                 }
-              }
             }
-          }
+        },
+        "/oauth2/facebook/{role}": {
+            "post": {
+                "tags": [
+                    "oauth2"
+                ],
+                "summary": "Create access token",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "facebookAuth",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "basic"
+                        }
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "remember",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "refresh_token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                }
+            }
+        },
+        "/clients/{id}": {
+            "get": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Get clients",
+                "description": "Permissions: [USER]",
+                "operationId": "getClients",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Update client",
+                "description": "Permissions: [USER]",
+                "operationId": "putClient",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "product"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "secret": {
+                                        "type": "string"
+                                    },
+                                    "redirect": {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    "active": {
+                                        "type": "boolean"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Delete client",
+                "description": "Permissions: [USER]",
+                "operationId": "deleteClient",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Update client",
+                "description": "Permissions: [USER]",
+                "operationId": "patchClient",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "secret": {
+                                        "type": "string"
+                                    },
+                                    "redirect": {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    "active": {
+                                        "type": "boolean"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/clients": {
+            "post": {
+                "tags": [
+                    "client"
+                ],
+                "summary": "Create client",
+                "description": "Permissions: [USER]",
+                "operationId": "createClient",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "user"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "secret": {
+                                        "type": "string"
+                                    },
+                                    "redirect": {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Licence"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/config": {
+            "get": {
+                "tags": [
+                    "install"
+                ],
+                "summary": "Get config",
+                "description": "Permissions: [SUPER_ADMIN]",
+                "operationId": "getConfig",
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Config"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "install"
+                ],
+                "summary": "Update database",
+                "description": "Permissions: [SUPER_ADMIN]",
+                "operationId": "updateDB",
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "install"
+                ],
+                "summary": "Update environment",
+                "description": "Permissions: [SUPER_ADMIN]",
+                "operationId": "updateEnvironment",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "smtp_host": {
+                                        "type": "string"
+                                    },
+                                    "smtp_port": {
+                                        "type": "integer"
+                                    },
+                                    "smtp_user": {
+                                        "type": "string"
+                                    },
+                                    "smtp_pass": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Config"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/install": {
+            "post": {
+                "tags": [
+                    "install"
+                ],
+                "summary": "Create admin client",
+                "description": "Permissions: [Global]",
+                "operationId": "createInstall",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    },
+                    "500": {
+                        "description": "The installation has already been performed"
+                    }
+                }
+            }
+        },
+        "/licences/{clientId}": {
+            "get": {
+                "tags": [
+                    "licence"
+                ],
+                "summary": "Get licences",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "getLicences",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Licence"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/licences": {
+            "post": {
+                "tags": [
+                    "licence"
+                ],
+                "summary": "Create licence",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "createLicence",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "url",
+                                    "user",
+                                    "product",
+                                    "client"
+                                ],
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "user": {
+                                        "type": "integer"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    },
+                                    "client": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Licence"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/licences/{id}": {
+            "put": {
+                "tags": [
+                    "licence"
+                ],
+                "summary": "Update licence",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "putLicence",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "url",
+                                    "user",
+                                    "product",
+                                    "client"
+                                ],
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "user": {
+                                        "type": "integer"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    },
+                                    "contingents": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "client": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Licence"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "licence"
+                ],
+                "summary": "Delete licence",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "deleteLicence",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "licence"
+                ],
+                "summary": "Update licence",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "patchLicence",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "user": {
+                                        "type": "integer"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    },
+                                    "client": {
+                                        "type": "string"
+                                    },
+                                    "contingents": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "key": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Licence"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Get api products",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "getProducts",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Update product",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "putProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "crm_id"
+                                ],
+                                "properties": {
+                                    "crm_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Delete product",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "deleteProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Update product",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "patchProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "crm_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/products": {
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Create product",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "createProduct",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "crm_id"
+                                ],
+                                "properties": {
+                                    "crm_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/providers/{clientId}": {
+            "get": {
+                "tags": [
+                    "provider"
+                ],
+                "summary": "Get providers",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "getProviders",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Provider"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/providers": {
+            "post": {
+                "tags": [
+                    "provider"
+                ],
+                "summary": "Create provider",
+                "description": "Permissions: [USER]",
+                "operationId": "createProvider",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "client"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "client": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Provider"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/providers/{id}": {
+            "delete": {
+                "tags": [
+                    "provider"
+                ],
+                "summary": "Delete provider",
+                "description": "Permissions: [USER]",
+                "operationId": "deleteProvider",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/scopes/{id}": {
+            "get": {
+                "tags": [
+                    "scope"
+                ],
+                "summary": "Get scopes",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "getScopes",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Scope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "scope"
+                ],
+                "summary": "Update scope",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "putScope",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "endpoint",
+                                    "product"
+                                ],
+                                "properties": {
+                                    "endpoint": {
+                                        "type": "string"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "scope"
+                ],
+                "summary": "Delete scope",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "deleteScope",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "scope"
+                ],
+                "summary": "Update scope",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "patchScope",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "endpoint",
+                                    "product"
+                                ],
+                                "properties": {
+                                    "endpoint": {
+                                        "type": "string"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/scopes": {
+            "post": {
+                "tags": [
+                    "scope"
+                ],
+                "summary": "Create scope",
+                "description": "Permissions: [ADMIN]",
+                "operationId": "createScope",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "endpoint",
+                                    "product"
+                                ],
+                                "properties": {
+                                    "endpoint": {
+                                        "type": "string"
+                                    },
+                                    "product": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Scope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "409": {
+                        "description": "Unprocessable database relation"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/stats/{id}": {
+            "get": {
+                "tags": [
+                    "stats"
+                ],
+                "summary": "Get stats",
+                "description": "Permissions: [TENANT]",
+                "operationId": "getStats",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "users": {
+                                            "type": "array",
+                                            "items": {
+                                                "anyOf": [
+                                                    {
+                                                        "properties": {
+                                                            "online": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/services": {
+            "get": {
+                "tags": [
+                    "service"
+                ],
+                "summary": "Get services",
+                "description": "Permissions: [TENANT]",
+                "operationId": "getServices",
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "array",
+                                            "items": {
+                                                "anyOf": [
+                                                    {
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": "string"
+                                                            },
+                                                            "method": {
+                                                                "type": "string"
+                                                            },
+                                                            "params": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {}
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get Users",
+                "description": "Permissions: [Admin]",
+                "operationId": "getUsers",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user",
+                "description": "Permissions: [END_USER]",
+                "operationId": "putUser",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user",
+                "description": "Permissions: [END_USER]",
+                "operationId": "deleteUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "json"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user",
+                "description": "Permissions: [END_USER]",
+                "operationId": "patchUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/users/restore": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Send password link",
+                "description": "Permissions: [Global]",
+                "operationId": "restoreUser",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                }
+            }
+        },
+        "/users/{id}/reset": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Reset user password",
+                "description": "Permissions: [Global]",
+                "operationId": "resetUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                }
+            }
+        },
+        "/users/{id}/activate": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Acivate user",
+                "description": "Permissions: [Global]",
+                "operationId": "acivateUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                }
+            }
+        },
+        "/admins": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create admin",
+                "description": "Permissions: [SUPER_ADMIN]",
+                "operationId": "createAdmin",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/users": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create user",
+                "description": "Permissions: [GLOBAL]",
+                "operationId": "createUser",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "role",
+                                    "active"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    },
+                                    "active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "json",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid resource parameter"
+                    },
+                    "401": {
+                        "description": "Invalid Access token requested"
+                    },
+                    "403": {
+                        "description": "Access denied due missing rights"
+                    },
+                    "422": {
+                        "description": "Unprocessable resource parameter"
+                    }
+                }
+            }
         }
-      }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
+    "components": {
+        "schemas": {
+            "Client": {
+                "title": "Client model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "name": {
+                        "title": "name",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "identifier": {
+                        "title": "identifier",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "authCodes": {
+                        "title": "authCodes",
+                        "format": "ArrayCollection"
+                    },
+                    "providers": {
+                        "title": "authCodes",
+                        "format": "ArrayCollection"
+                    },
+                    "secret": {
+                        "title": "secret",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "redirect": {
+                        "title": "redirect",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "active": {
+                        "title": "active",
+                        "type": "string",
+                        "format": "boolean"
+                    },
+                    "product": {
+                        "title": "product",
+                        "format": "Product"
+                    }
+                },
+                "type": "object"
+            },
+            "Config": {
+                "title": "Config model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "smtp_host": {
+                        "title": "smtpHost",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "smtp_port": {
+                        "title": "smtpPort",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "smtp_user": {
+                        "title": "smtpUser",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "smtp_pass": {
+                        "title": "paypalClient",
+                        "type": "string",
+                        "format": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Licence": {
+                "title": "Licence model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "active": {
+                        "title": "active",
+                        "type": "string",
+                        "format": "boolean"
+                    },
+                    "verified": {
+                        "title": "verified",
+                        "type": "string",
+                        "format": "boolean"
+                    },
+                    "url": {
+                        "title": "url",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "product": {
+                        "title": "product",
+                        "format": "Product"
+                    },
+                    "contingents": {
+                        "title": "tokens",
+                        "type": "string",
+                        "format": "array"
+                    },
+                    "client": {
+                        "title": "client",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "subscription": {
+                        "title": "subscription",
+                        "type": "string",
+                        "format": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "Product": {
+                "title": "Product model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "crm_id": {
+                        "title": "crm_id",
+                        "type": "string",
+                        "format": "integer"
+                    },
+                    "scopes": {
+                        "title": "scopes",
+                        "format": "ArrayCollection"
+                    },
+                    "licences": {
+                        "title": "licences",
+                        "format": "ArrayCollection"
+                    }
+                },
+                "type": "object"
+            },
+            "Provider": {
+                "title": "Provider model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "type": {
+                        "title": "type",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "client": {
+                        "title": "client",
+                        "format": "Client"
+                    },
+                    "provider_id": {
+                        "title": "provider_id",
+                        "type": "string",
+                        "format": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Scope": {
+                "title": "Scope model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "endpoint": {
+                        "title": "endpoint",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "product": {
+                        "title": "product",
+                        "format": "Product"
+                    }
+                },
+                "type": "object"
+            },
+            "Token": {
+                "title": "Token model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "scope": {
+                        "title": "scope",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "access_token": {
+                        "title": "access_token",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "refresh_token": {
+                        "title": "refresh_token",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "id_token": {
+                        "title": "id_token",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "expires": {
+                        "title": "expires",
+                        "format": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created": {
+                        "title": "created",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "updated": {
+                        "title": "updated",
+                        "type": "string",
+                        "format": "DateTime"
+                    },
+                    "role": {
+                        "title": "role",
+                        "format": "string"
+                    },
+                    "email": {
+                        "title": "email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "active": {
+                        "title": "active",
+                        "type": "string",
+                        "format": "boolean"
+                    },
+                    "active_code": {
+                        "title": "active_code",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "reset_password": {
+                        "title": "resetPassword",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "clients": {
+                        "title": "clients",
+                        "format": "ArrayCollection"
+                    },
+                    "licences": {
+                        "title": "licences",
+                        "format": "ArrayCollection"
+                    }
+                },
+                "type": "object"
             }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
+        },
+        "securitySchemes": {
+            "basicAuth": {
+                "type": "oauth2",
+                "in": "header",
+                "flows": {
+                    "password": {
+                        "tokenUrl": "/api/v1/oauth2/token",
+                        "scopes": {}
+                    },
+                    "clientCredentials": {
+                        "tokenUrl": "/api/v1/oauth2/token",
+                        "scopes": {}
+                    },
+                    "authorizationCode": {
+                        "authorizationUrl": "/oauth2/authorize",
+                        "scopes": {
+                            "write:users": "modify user account",
+                            "read:users": "read user account"
+                        }
+                    }
+                },
+                "scheme": "basic"
             }
-          }
         }
-      }
     }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
 }
