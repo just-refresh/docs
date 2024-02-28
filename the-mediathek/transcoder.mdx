@@ -1,0 +1,29 @@
+---
+title: 'Transcoder'
+description: 'Der Video Transcoder'
+---
+
+<Note>
+  Wenn Fragen bitte an Kev wenden. 
+</Note>
+
+## Der Transcoder
+
+Geschrieben in GO stellt der Transcoder einen Websocket zur Verfügung. An diesen können über https (prod) & http (dev) Videos geschickt werden, 
+welche dann für das HLS streaming encoded werden. 
+
+## Mögliche Fehler
+1. Falscher Port in den Einstellungen?
+2. Falsches Protokoll im WebsocketService (vue)
+
+## Authentication
+
+All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+
+```json
+"security": [
+  {
+    "bearerAuth": []
+  }
+]
+```

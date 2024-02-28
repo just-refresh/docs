@@ -1,0 +1,32 @@
+---
+title: 'Konzept'
+description: 'Beschreibung und Erklärund der Mediathek'
+---
+
+<Note>
+  Hinweis für was auch immer, just um Content an der Stelle zu haben. 
+</Note>
+
+## Die Mediathek
+
+Sie dient zum abspielen und zur Verfügung stellen von Videomaterial, welches in Eigenregie produziert wurde
+
+<Card
+  title="Plant Store Endpoints"
+  icon="leaf"
+  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
+>
+  View the OpenAPI specification file
+</Card>
+
+## Authentication
+
+All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+
+```json
+"security": [
+  {
+    "bearerAuth": []
+  }
+]
+```
