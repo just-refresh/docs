@@ -1,0 +1,217 @@
+---
+title: Plugins
+description: Erläuterung aller Plugins und Anleitungen zur Verwendung und Erstellung neuer Plugins.
+---
+
+<Note>
+  Bitte immer die Anleitung befolgen, um weitere Plugins einzubinden oder Inhalte des Core zu weitern
+</Note>
+
+## Liox Plugins
+
+Wir erweitern den Core um neue Funktionen und Views mit Hilfe von Plugins. 
+
+#### How to start?
+
+**1. Ordner anlegen**
+```bash
+  cd plugins && mkdir -p pluginName/{src/components/{comp-1/{,comp-1-btn.vue},modal/},src/views/view-1}
+```
+
+Siehe [Ordnerstruktur](#ordnerstruktur)
+
+**2. Notwendigen Dateien erstellen**
+  <AccordionGroup>
+    <Accordion title="index.js">
+          ```javascript
+        import * as components from './src/components'
+        import AppService from '@/services/app.service';
+        import router from '@/router';
+
+        export default {
+          // called by Vue.use(FirstPlugin)
+          install(Vue) {
+
+            // register the component with vue
+            Object.values(components).forEach(component => {
+              Vue.component(component.name, component)
+            })
+
+            // create a mixin
+            Vue.mixin({
+              beforeCreate () {
+
+                // Add Routes to the Router
+                AppService.addRoutes(this,[
+                  {
+                    path: '/view-1',
+                    name: 'view-1',
+                    component: 'liox-mediathek-shop/src/views/view-1',
+                    beforeEnter: router.guard,
+                    meta: {
+                      roles: ['ROLE_TENANT', 'ROLE_USER'],
+                      product: 'Starter'
+                    },
+                  },
+
+                ]);
+              },
+
+              created() {
+                // Add Links to SideMenü
+                AppService.addLinks(this,[
+                  {
+                    path: '/view-1',
+                    name: 'view-1',
+                    icon: 'mdi-currency-eur',
+                    beforeEnter: router.guard,
+                    meta: {
+                      roles: ['ROLE_TENANT', 'ROLE_USER'],
+                      product: 'Starter'
+                    },
+                    index: 2
+                  }
+                ])
+
+                // Add Components to Core
+                AppService.extendCoreComponents([
+                  'components/comp-1/comp-1',
+                  'components/modal/modal',
+                ])
+                
+              }
+            });
+          },
+        };
+      ```
+    </Accordion>
+    <Accordion title="package.json">
+      ```json
+        {
+          "name": "mediathek-shop",
+          "version": "0.1.0"
+        }
+      ```
+
+    </Accordion>
+  </AccordionGroup>
+**3. Plugin installieren**
+   
+  Hierfür muss das Plugin in die Package.json eingebunden werden.
+   
+  ```json
+    ...
+    "name": "Mediathek",
+    "version": "2.24.3",
+    "private": true,
+    "scripts": {
+      "start": "docker-compose up",
+      "stop": "docker-compose down && docker rmi -f image justrefresh/lkf-mediathek",
+      "serve": "vue-cli-service serve",
+      "build": "vue-cli-service build",
+      "lint": "vue-cli-service lint"
+    },
+    "dependencies": {
+      "liox-pluginName": "file:plugins/liox-mediathek-pluginName",
+    ...
+  ``` 
+  Anschließend via Konsole installieren
+  ```bash
+    npm i
+  ``` 
+
+**4. Plugin in der App einbinden**
+
+  ```javascript main.js
+    // ###########
+    // src/main.js
+    // ###########
+
+    // My own Plugin
+    import pluginName from "../plugins/liox-mediathek-pluginName";
+    Vue.use(pluginName, router);
+  ``` 
+
+  Neue Komponente einführen:
+  ```javascript Bsp.: src/videos.vue
+    // ###########    
+    // src/videos.vue
+    // Wo die Komponente genutzt werden soll
+    // ###########
+
+    <template>
+      <keep-alive>
+        <component :is="comp1"/>
+      </keep-alive>
+    </template>
+  
+    computed: {
+      comp1() {
+        if (!AppService.isComponentExtended('components/comp-1/comp-1')) {
+          if (typeof this.$store.state.main.video.result !== "undefined") {
+            // return import('@/components/modal/adminVideoBearbeiten').then((module) => module.default); // nicht mehr notwendig?
+            return comp1; // or some default component
+          }
+        }
+      },
+    },
+  ``` 
+
+  Bestehende Komponente erweitern:
+  ```javascript Bsp.: src/videos.vue
+    // ###########
+    // Bsp.:
+    // src/videos.vue
+    // Wo die Komponente genutzt werden soll
+    // ###########
+
+    <template>
+      <keep-alive>
+        <component :is="comp1"/>
+      </keep-alive>
+      <comp1/>
+    </template>
+  
+    computed: {
+      comp1() {
+        if (!AppService.isComponentExtended('components/comp-1/comp-1')) {
+          if (typeof this.$store.state.main.video.result !== "undefined") {
+            // return import('@/components/modal/adminVideoBearbeiten').then((module) => module.default); // nicht mehr notwendig?
+            return comp1; // or some default component
+          }
+        }
+      },
+    },
+  ``` 
+
+#### Ordnerstruktur 
+``` 
+mediathek-core/
+├──plugins/
+│  └── liox-mediathek-pluginName
+│    ├── index.js
+│    ├── package.json
+│    └── src
+│        ├── components
+│        │   ├── index.js
+│        │   ├── comp-1
+│        │   │   ├── comp-1.vue
+│        │   │   ├── 
+│        │   │   └── comp-1-btn.vue
+│        │   └──  modal
+│        │        └── modal.vue
+│        │   
+│        │   
+│        └── views
+│            ├── view-1
+│            └── view-1.vue
+```
+
+**Ordernerstruktur erstellen**
+
+Im "src"-Ordner der Mediathek:
+```
+cd plugins && mkdir -p pluginName/{src/components/{comp-1/{,comp-1-btn.vue},modal/},src/views/view-1}
+```
+
+
